@@ -2,6 +2,7 @@ import React, { PureComponent } from 'react'
 import { Form, Icon, Input, Button, Checkbox } from 'antd';
 import styles from './index.less'
 // import router from 'umi';
+import { connect } from 'dva';
 import { history } from 'umi';
 
 class Login extends PureComponent{
@@ -44,12 +45,12 @@ class Login extends PureComponent{
         {/* <div className='formStyle'> */}
         <Form onSubmit={this.handleSubmit} className="login-form" >
         <Form.Item>
-          {getFieldDecorator('username', {
-            rules: [{ required: true, message: 'Please input your username!' }],
+          {getFieldDecorator('nickname', {
+            rules: [{ required: true, message: 'Please input your nickname!' }],
           })(
             <Input
               prefix={<Icon type="user" style={{ color: 'rgba(0,0,0,.25)' }} />}
-              placeholder="Username"
+              placeholder="nickname"
             />
            )}
         </Form.Item>
@@ -65,12 +66,12 @@ class Login extends PureComponent{
           )}
         </Form.Item>
         <Form.Item>
-          {getFieldDecorator('remember', {
+          {/* {getFieldDecorator('remember', {
             valuePropName: 'checked',
             initialValue: true,
           })(
           <Checkbox>Remember me</Checkbox>
-         )} 
+         )}  */}
           <a className="login-form-forgot" href="" style={{float:'right'}}>
             Forgot password
           </a>
@@ -86,6 +87,5 @@ class Login extends PureComponent{
   }
 }
 
-export default Form.create({name:'login'})(Login);
-
+export default connect()(Form.create({ name: 'login' })(Login));
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     
