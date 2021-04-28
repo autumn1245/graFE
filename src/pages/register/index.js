@@ -50,7 +50,7 @@ class Register extends PureComponent {
                 rules: [
                   { required: true, message: 'Please input your username!' },
                 ],
-                initialValue: 'wyr',
+                // initialValue: 'wyr',
               })(
                 <Input
                   prefix={
@@ -65,7 +65,7 @@ class Register extends PureComponent {
                 rules: [
                   { required: true, message: 'Please input your Password!' },
                 ],
-                initialValue: 'wyrpassword',
+                // initialValue: 'wyrpassword',
               })(
                 <Input
                   prefix={
@@ -79,7 +79,7 @@ class Register extends PureComponent {
             <Form.Item>
               {getFieldDecorator('nickname', {
                 rules: [{ required: true, message: 'Please input your name!' }],
-                initialValue: 'wyrnickname',
+                // initialValue: 'wyrnickname',
               })(
                 <Input
                   prefix={
@@ -92,7 +92,7 @@ class Register extends PureComponent {
             <Form.Item>
               {getFieldDecorator('sex', {
                 rules: [{ required: true, message: 'Please input your sex!' }],
-                initialValue: 'nv',
+                initialValue: '',
               })(
                 <Input
                   prefix={
@@ -107,7 +107,7 @@ class Register extends PureComponent {
                 rules: [
                   { required: true, message: 'Please input your description!' },
                 ],
-                initialValue: 'description',
+                initialValue: '',
               })(
                 <Input
                   prefix={
@@ -125,7 +125,7 @@ class Register extends PureComponent {
                 rules: [
                   { required: true, message: 'Please input your region!' },
                 ],
-                initialValue: 'regionshaxi',
+                // initialValue: '',
               })(
                 <Input
                   prefix={

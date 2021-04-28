@@ -1,3 +1,5 @@
+import { message } from 'antd';
+import { history } from 'umi';
 import Service from '../constant/service'
 
 const {register} = Service;
@@ -16,8 +18,11 @@ export default {
             register:data||{}
           }
         })
+      if (data.status === 200) {
+        message.success('注册成功！')
+        history.push('/login')
+      }
     }
-
   },
   // reducers: {
   //   updateState(state, { payload }) {

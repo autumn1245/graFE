@@ -8,7 +8,6 @@ const Service = {
     },
     //注册
     register(params) {
-        debugger
         return post(`${localUrl}/user/register`, params)
     },
     //初始化数据

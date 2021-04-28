@@ -1,3 +1,5 @@
+import { message } from 'antd';
+import { history } from 'umi';
 import Service from '../constant/service'
 
 const {checkLogin} = Service;
@@ -16,6 +18,10 @@ export default {
             Login:data||{}
           }
         })
+      if (data.status === 200) {
+        message.success('登录成功！')
+        history.push('/home')
+      }
     }
 
   },

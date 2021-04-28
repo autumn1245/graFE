@@ -15,9 +15,10 @@ async function request(options) {
             },
         })
         .then(res => {
-            return res.data;
+            console.log(res.data,'res.data=====')
+            return res.data; 
         })
-        .then(data => parseErrorMessage(data, options))
+        // .then(data => parseErrorMessage(data, options))
         .catch(err => {
             // if (hasProperty(err, 'err_no') && err.err_show !== false) {
             //   message.error(err.err_msg || '好像出错了~');
@@ -31,8 +32,8 @@ async function request(options) {
             //   message.error('请求超时~');
             //   return {};
             // }
-            // console.log('服务异常：', err.message);
-            message.error('服务异常！', err);
+             console.log('=-=========输出', err.message);
+            //  message.error('服务异常！', err);
             return {};
         });
 }
@@ -48,7 +49,7 @@ function post(url, params, options) {
         // ...baseOptions,
         method: 'post',
         headers: {
-            Accept: 'application/json',
+            // Accept: 'application/json',
             'Content-Type': 'application/json;charset=UTF-8',
         },
         data: JSON.stringify(params),
