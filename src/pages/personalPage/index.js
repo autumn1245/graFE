@@ -1,14 +1,28 @@
 import React, { PureComponent } from 'react'
-import { Form, Icon, Input, Button, Card  } from 'antd';
+import { Form, Icon, Input, Button, Card } from 'antd';
+import { connect } from 'dva';
+
 import styles from './index.less'
 
-class homePage extends PureComponent{
+class PersonalPage extends PureComponent{
   constructor(props){
     super(props);
     this.state={
 
     }
   }
+
+  componentDidMount() {
+    console.log('vcomponentDidMount======',this.props)
+    const { dispatch } = this.props
+    console.log(this.props, 'props=====')
+    const value = { nickname: 'cuihua' }
+    dispatch({
+      type: 'personalPage/loadPersonal',
+      payload: value,
+    });
+  }
+
   render(){
     const {form} = this.props
     //  const { getFieldDecorator } = form;s
@@ -31,4 +45,4 @@ class homePage extends PureComponent{
     )
   }
 }
-export default homePage
+export default connect()(Form.create({ name: 'personalPage' })(PersonalPage));

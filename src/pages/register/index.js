@@ -19,7 +19,6 @@ class Register extends PureComponent {
     e.preventDefault();
     form.validateFields((err, values) => {
       if (!err) {
-        console.log(values, '登录的参数=====');
         dispatch({
           type: 'register/register',
           payload: values,

@@ -2,28 +2,23 @@ import { message } from 'antd';
 import { history } from 'umi';
 import Service from '../constant/service'
 
-const {checkLogin} = Service;
+const {loadPersonal} = Service;
 
 export default {
-  namespace:'login',
+  namespace:'personalPage',
   state:{
     todos:[4444]
   },
   effects:{
-    *login({payload},{call,put}){
-        const data = yield call(checkLogin,{...payload})
+    *loadPersonal({ payload }, { call, put }) {
+        const data = yield call(loadPersonal,{...payload})
         yield put({
           type:'updateState',
           payload:{
             Login:data||{}
           }
         })
-      if (data.status === 200) {
-        message.success('登录成功！')
-        history.push('/home')
-      }
     }
-
   },
   reducers: {
     updateState(state, { payload }) {

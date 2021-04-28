@@ -14,6 +14,10 @@ const Service = {
     init(params) {
         return get(``, params)
     },
+    //加载个人的详细的信息
+    loadPersonal(params) {
+        return get (`${localUrl}/user/find`,params)
+    },
     //加载图片详情
     loadDetail(params) {
         return postJson(``, params)
@@ -22,8 +26,6 @@ const Service = {
     downLoadPic(params) {
         return postJson(``, params)
     }
-
-
 }
 
 export default Service;
