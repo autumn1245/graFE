@@ -1,4 +1,4 @@
-import {get, postJson, post } from './../../utils/req'
+import {get, postJson, post ,put} from './../../utils/req'
 import register from '../register';
 const localUrl = 'http://127.0.0.1:3080'
 const Service = {
@@ -18,6 +18,14 @@ const Service = {
     loadPersonal(params) {
         return get (`${localUrl}/user/find`,params)
     },
+    // //修改个人信息
+    // modifyMessage(params) {
+    //     return put(`${localUrl}/user`,params)
+    // },
+        //修改个人信息
+        modifyMessage(params) {
+            return post(`${localUrl}/user/update`,params)
+        },
     //加载图片详情
     loadDetail(params) {
         return postJson(``, params)

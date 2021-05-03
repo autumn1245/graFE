@@ -2,7 +2,7 @@ import { message } from 'antd';
 import { history } from 'umi';
 import Service from '../constant/service'
 
-const {loadPersonal} = Service;
+const {loadPersonal,modifyMessage } = Service;
 
 export default {
   namespace:'personalPage',
@@ -18,11 +18,30 @@ export default {
             Login:data||{}
           }
         })
+    },
+    *modifyMessage({ payload }, { call, put }) {
+      const data = yield call(modifyMessage, { ...payload })
+      const { status } = data
+      if (status === 200) {
+        message.success('修改成功！')
+      }
+      yield put({
+        type: 'updateState',
+        payload: {
+          modifyMessage:data||{}
+        }
+      })
     }
   },
   reducers: {
+    // updateState(state, { payload }) {
+    //   return updateState(state, payload);
+    // },
     updateState(state, { payload }) {
-      return updateState(state, payload);
+      return {
+        ...state,
+        ...payload,
+      }
     },
   },
 }

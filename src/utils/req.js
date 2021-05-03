@@ -15,7 +15,6 @@ async function request(options) {
             },
         })
         .then(res => {
-            console.log(res.data,'res.data=====')
             return res.data; 
         })
         // .then(data => parseErrorMessage(data, options))
@@ -91,9 +90,24 @@ function get(url, params, options) {
         ...options,
     });
 }
+function put(url,params,options) {
+    return request({
+        url,
+        //...baseOptions,
+        method: 'put',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+        data: JSON.stringify(params),
+        ...options,
+
+    })
+}
 
 export {
     get,
     post,
-    postJson
+    postJson,
+    put
 }
