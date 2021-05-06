@@ -9,8 +9,8 @@ class Login extends PureComponent{
   constructor(props){
     super(props);
     this.state={
-
-    }
+      Login:{}
+    } 
   }
   // Login(){
   //   // 先判断表单的数据是否符合规范再发请求进行校验
@@ -20,6 +20,12 @@ class Login extends PureComponent{
   //   })
 
   // }
+  componentDidMount() {
+    const { Login } = this.props
+    const { data } = Login||{}
+    const { text } = data ||{}
+    this.setState({Login:text})
+  }
   goRegister = () => {
     history.push('/register');
   }
@@ -36,7 +42,7 @@ class Login extends PureComponent{
       }
     });
   };
-  render(){
+  render() {  
     const {form} = this.props
      const { getFieldDecorator } = form;
     return(
@@ -87,5 +93,13 @@ class Login extends PureComponent{
   }
 }
 
-export default connect()(Form.create({ name: 'login' })(Login));
+
+function mapStateToProps(state) {
+  const { Login } = state.login
+  return {
+    Login // 在这return,上面才能获取到
+  }
+}
+
+export default connect(mapStateToProps)(Form.create({ name: 'login' })(Login))
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     

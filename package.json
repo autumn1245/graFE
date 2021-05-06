@@ -21,10 +21,14 @@
         ]
     },
     "dependencies": {
+        "@ant-design/icons": "^4.6.2",
         "@ant-design/pro-layout": "^6.5.0",
         "@umijs/preset-react": "1.x",
         "antd": "^3.10.2",
         "axios": "^0.21.1",
+        "macy": "^2.5.1",
+        "react-cookies": "^0.1.1",
+        "react-masonry-component": "^6.2.1",
         "umi": "^3.3.3"
     },
     "devDependencies": {

@@ -22,10 +22,14 @@ const Service = {
     // modifyMessage(params) {
     //     return put(`${localUrl}/user`,params)
     // },
-        //修改个人信息
-        modifyMessage(params) {
-            return post(`${localUrl}/user/update`,params)
-        },
+    //修改个人信息
+    modifyMessage(params) {
+        return post(`${localUrl}/user/update`,params)
+    },
+    //上传图片
+    uploadPic(params) {
+        return post(`${localUrl}/pic/submit`,params)
+    },
     //加载图片详情
     loadDetail(params) {
         return postJson(``, params)

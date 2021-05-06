@@ -2,12 +2,12 @@ import { message } from 'antd';
 import { history } from 'umi';
 import Service from '../constant/service'
 
-const {loadPersonal,modifyMessage } = Service;
+const {loadPersonal,modifyMessage ,uploadPic} = Service;
 
 export default {
   namespace:'personalPage',
   state:{
-    todos:[4444]
+    // todos:[4444]
   },
   effects:{
     *loadPersonal({ payload }, { call, put }) {
@@ -31,7 +31,16 @@ export default {
           modifyMessage:data||{}
         }
       })
-    }
+    },
+    *uploadPic({ payload }, { call, put }) {
+      const data = yield call(uploadPic,{...payload})
+      yield put({
+        type:'updateState',
+        payload:{
+          Upload:data||{}
+        }
+      })
+  },
   },
   reducers: {
     // updateState(state, { payload }) {

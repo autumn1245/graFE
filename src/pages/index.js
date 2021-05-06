@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import styles from './index.less';
 import Login from './login/index'
+import Home from './home/index';
 import Register from './register/index'
 import { connect } from 'dva';
 import {  Form } from 'antd';
@@ -15,12 +16,13 @@ class Pages extends Component{
   }
   render(){
     return (
-      <div>
-        <Login>
+       <div>
+        {/* <Login>
           登陆
-        </Login>
+        </Login> */}
+        <Home/>
         {/* <Register>注册</Register> */}
-      </div>
+       </div>
     );
   }
 }

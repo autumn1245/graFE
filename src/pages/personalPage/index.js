@@ -1,9 +1,11 @@
 import React, { PureComponent } from 'react'
-import { Form, Icon, Input, Button, Card ,Modal } from 'antd';
+import { Form, Icon, Input,Upload, Button, Card ,Modal,Select, message } from 'antd';
 import { connect } from 'dva';
-
+import { PlusOutlined } from '@ant-design/icons';
+const { Option } = Select;
+const { TextArea } = Input;
 import styles from './index.less'
- 
+import classify from './../../utils/classify'
 // const mapStateToProps = (state,personalPage)=>{
 //   return { 
 //     todos: state.todos ,
@@ -18,15 +20,20 @@ class PersonalPage extends PureComponent{
     super(props);
     this.state={
       modify: false,
-      visible:true
+      visible: true,
+      previewVisible: false,
+      previewImage: '',
+      previewTitle: '',
+      fileList: [],
     }
   }
 
 
   componentDidMount() {
     const { dispatch } = this.props
-    console.log(this.props,'props------component')
-    const value = { nickname: 'cuihua' }
+    const resNickname = this.props.location.params.nickname
+    console.log('u------nickname',resNickname)
+    const value = { nickname: resNickname }
     dispatch({
       type: 'personalPage/loadPersonal',
       payload: value,
@@ -36,7 +43,6 @@ class PersonalPage extends PureComponent{
   }
 
   componentDidUpdate() {
-    console.log(this.props, 'props=====componentdidupdate')
     const { personalPage } = this.props
     const { modifyMessage } = personalPage||{}
     const { status } = modifyMessage ||{}
@@ -45,13 +51,24 @@ class PersonalPage extends PureComponent{
     }
   }
 
+  renderHistory = () => {
+    return (
+      <div className = {styles.leftHistory}  >
+      <Card title='优秀作品展示' className={styles.leftCard}  >
+
+        </Card>
+        </div>
+    )
+  }
   renderMessage = () => {
     const { personalPage } = this.props
     const { Login={} } = personalPage
     const { data={} } = Login
-    const {u_area,u_key,u_dis,u_name,u_nickname,u_sex}  = data
+    const { u_area, u_key, u_dis, u_name, u_nickname, u_sex } = data
+    
     return (
-      <div style={{ background: '#ECECEC', padding: '30px',display:'flex',justifyContent:'space-around' }}>
+      <div>
+      <div className= {styles.leftMess}  >
         <Card title={`${u_nickname}`} bordered={false}
           extra={<a href="#"
             onClick={() => { this.setState({ modify: true}) }}>修改信息</a>} style={{ width: 666 }}>
@@ -68,6 +85,8 @@ class PersonalPage extends PureComponent{
             </div>
   
         </Card>
+        </div>
+        {this.renderHistory()}
       </div>
     )
   }
@@ -81,11 +100,6 @@ class PersonalPage extends PureComponent{
 
   handleOk = (e) => {
     const { form, dispatch, personalPage } = this.props
-    // this.setState({ loading: true });
-    // setTimeout(() => {
-    //   this.setState({ loading: false, visible: false });
-    // }, 3000);
-
     const { Login: { data } } = personalPage
     const {id} = data
     e.preventDefault();
@@ -95,9 +109,6 @@ class PersonalPage extends PureComponent{
         dispatch({
           type: 'personalPage/modifyMessage',
           payload: value,
-        }).then((data) => {
-          console.log(data,'dta=======')
-          
         })
     } else {
       return null;
@@ -106,7 +117,7 @@ class PersonalPage extends PureComponent{
 
 };
 
-handleCancel = () => {
+ handleCancel = () => {
   this.setState({ visible: false });
 };
 
@@ -229,36 +240,194 @@ renderChangeModel = () => {
         </Modal>
       </div>
     )
+}
+  //对于类别的处理
+  dealClassify = (param) => {
+    const { catery } = classify
+    let result 
+   catery.forEach((it, ind) => {
+      const { name, id } = it
+      if (name == param) {
+         result = id
+      }
+   })
+    return result
   }
+  
+  submitUpload = (e) => {
+    const { form, dispatch, personalPage } = this.props
+    const { fileList } = this.state
+    const { Login: { data } } = personalPage
+    const { id } = data
+   
+    e.preventDefault();
+    form.validateFields((err, values) => {
+      console.log(values,'value=======')
+      const value = { id, ...values }
+      const {title,classify:cla,des} = value
+      if (!err) {
+        fileList.forEach((it, index) => {
+          const { response, name } = it
+          
+          if (response !== undefined) {
+            const { sizeFinal, url ,status} = response
+            const val = {
+              size: sizeFinal,
+              url,
+              name,
+              uid: id,
+              title,
+              des,
+              style:this.dealClassify(cla)
+            }
+            if (status === 'error') {
+              message.error('上传服务器失败！')
+            } else {
+              dispatch({
+                type: 'personalPage/uploadPic',
+                payload: val,
+            })
+            }
+         
+          }
+          else {
+            message.info('图片上传云服务中请稍等')
+          }
+        })
+ 
+    } else {
+      return null;
+    }
+  });
+  }
+  renderUpload = () => {
+    const { form } = this.props
+    const { getFieldDecorator } = form;
+    const { previewVisible, previewImage, fileList, previewTitle } = this.state;
+    const {catery} = classify
+    const uploadButton = (
+      <div>
+        <PlusOutlined />
+        <div style={{ marginTop: 8 }}>Upload</div>
+      </div>
+    );
+    
+  const handleCancel = () => this.setState({ previewVisible: false });
+
+  const handlePreview = async file => {
+    if (!file.url && !file.preview) {
+      file.preview = await getBase64(file.originFileObj);
+    }
+
+    this.setState({
+      previewImage: file.url || file.preview,
+      previewVisible: true,
+      previewTitle: file.name || file.url.substring(file.url.lastIndexOf('/') + 1),
+    });
+  };
+
+    const handleChange = ({ fileList }) => { this.setState({ fileList }); console.log(fileList,'fileList===')};
+
+  const  handleChangeSelect = (value)=> {
+    console.log(`selected ${value}`);
+  }
+    const onchange = (e) => {
+      console.log(e,'e======')
+      
+    }
+    return (
+      <div className= {styles.rightForm} >
+        <Card title="上传图片" style={{ width: 400 }} >
+          {/* <div className={styles.uploadCard}> */}
+          <div className={styles.leftUpload}>
+            <Form>
+            <Form.Item label='标题'>
+              {getFieldDecorator('title', {
+                rules: [
+                  { required: true, message: 'Please input title!' },
+                ],
+                initialValue: 'title',
+              })(
+                <Input
+                  // prefix={
+                  //   // <Icon type="user" style={{ color: 'rgba(0,0,0,.25)' }} />
+                  // }
+                  placeholder="Title"
+                />,
+              )}
+              </Form.Item>
+              <Form.Item label='分类'>
+              {getFieldDecorator('classify', {
+                rules: [
+                  { required: true, message: 'Please check your classify!' },
+                ],
+                initialValue: '人文',
+              })(
+                <Select style={{ width: 190 }} onChange={handleChangeSelect}>
+                  {(catery || []).map((item, index) => {
+                    const {id,text} = item
+                    return ( <Option value={id}>{text}</Option>)
+                  })}
+              </Select>
+              )}
+            </Form.Item>
+            <Form.Item label='描述'>
+              {getFieldDecorator('des', {
+                rules: [
+                  { required: true, message: 'Please input description!' },
+                ],
+                initialValue: 'des',
+              })(
+                <TextArea 
+                  // prefix={
+                  //   // <Icon type="user" style={{ color: 'rgba(0,0,0,.25)' }} />
+                  // }
+                  onChange = {onchange}
+                  placeholder="description"
+                />,
+              )}
+              </Form.Item>
+            </Form>
+            
+            </div>
+            <>
+        <Upload
+          action="http://127.0.0.1:3080/upload"
+          listType="picture-card"
+          fileList={fileList}
+          onPreview={handlePreview}
+          onChange={handleChange}
+        >
+          {fileList.length >= 4 ? null : uploadButton}
+        </Upload>
+        <Modal
+          visible={previewVisible}
+          title={previewTitle}
+          footer={null}
+          onCancel={handleCancel}
+        >
+          <img alt="example" style={{ width: '100%' }} src={previewImage} />
+        </Modal>
+          </>
+          {/* </div> */}
+          <Button key="submit" onClick={this.submitUpload} type='primary'> 上传</Button>
+          </Card>
+      </div>
+    )
+}
 
   render(){
     const { form } = this.props
     const{modify} = this.state
     //  const { getFieldDecorator } = form;
     return(
-      <div>
-        <div style={{ background: '#ECECEC', padding: '30px',display:'flex',justifyContent:'space-around' }}>
-          {/* <Card title="Card title" bordered={false} extra={<a href="#">More</a>} style={{ width: 666 }}>
-            <div>
-              <p>{`关注：${u_key}`}</p>
-              <p>{`粉丝：${u_key}`}</p>
-              <div>
-                <p>{`name${u_name}`}</p>
-                <p>{`sex${u_sex}`}</p>
-                <p>{ `area${u_area}`}</p>
-              </div>
-            </div>
-  
-          </Card> */}
+      <div className= {styles.all}>
+        <div className={styles.topall}>
           {this.renderMessage()}
-          {modify? this.renderChangeModel():null}
-          <Card title="上传图片"  style={{ width: 350 }}>
-            <p>Card content</p>
-            <Button onClick={()=>{}}>上传图片</Button>
-            <p>Card content</p>
-            <p>Card content</p>
-          </Card>
+          {modify ? this.renderChangeModel() : null}
+          {this.renderUpload()}
         </div>
+        <div>1234</div>
       </div>
     )
   }
