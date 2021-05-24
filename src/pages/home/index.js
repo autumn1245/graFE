@@ -1,28 +1,94 @@
 import React, { PureComponent } from 'react'
 import { history } from 'umi';
+import LazyLoad from 'react-lazyload';
 import { Form, Icon, Input, Button, Layout, Breadcrumb, Menu,Dropdown } from 'antd';
 import { DownOutlined } from '@ant-design/icons';
 import cookie from 'react-cookies'
+import classify from './../../utils/classify'
 import styles from './index.less'
 import { UserOutlined, LaptopOutlined, NotificationOutlined } from '@ant-design/icons';
 const { Search } = Input;
 const { Header, Content, Footer, Sider } = Layout;
-import Masonry from 'react-masonry-component';
-import { connect } from 'dva';
-class Home extends PureComponent{
-  constructor(props){
-    super(props);
-    this.state={
+import ImageLauout from "../components/imageLayout";
 
+
+// 翻页器变量控制
+let isSend = false;//是否正在发送请求
+let page = 1;//当前页数
+let isEnd = false; // 是否在最后一页
+let imageList = [];
+
+const createIazyLoader = (node, urls) =>{
+  let current = 0;
+  return num => {
+    while (num--) {
+      const child = node.querySelector('.img-unload');
+      child.url = urls[current] || '';
+      child.className = child.className.split(' ').filter(item => item !== 'img-unload').join(' ')
+      current++
     }
+  }
+}
+
+import { connect } from 'dva';
+class Home extends PureComponent {
+  constructor(props) {
+    super(props);
+    this.state = {
+      default_pic_1: 'https://ss3.bdstatic.com/70cFv8Sh_Q1YnxGkpoWK1HF6hhy/it/u=2555409660,4253693389&fm=26&gp=0.jpg'
+    }
+  }
+
+  componentDidMount() {
+   this.searchHomePic(page)
+  }
+
+  searchHomePic(num) {
+     this.props.dispatch({
+      type: 'home/loadPicList',
+       payload: {
+         pagesize:10,
+         curpage:num
+      }
+    })
+  }
+ 
+ //对于类别的处理
+ dealClassify = (param) => {
+  const { catery } = classify
+  let result 
+ catery.forEach((it, ind) => {
+    const { name, id } = it
+    if (name == param) {
+       result = id
+    }
+ })
+  return result
+}
+  onSearch = value => {
+    const { home } = this.props
+    const { searchPicArr } = home||{}
+    const { data} = searchPicArr||{} 
+    const temp = this.dealClassify(value)
+    this.props.dispatch({
+      type: 'home/searchPic',
+      payload:{searchId:temp}
+    }).then(() => {
+      console.log(data,'data===')
+    })
+
+    
+  }
+
+  lazyLoad(num = 0, nodes, urls = []) {
+
   }
   renderHeader = () => {
     const { Login } = this.props
     const { status, data } = Login || {}
-    const {nickname} = data ||{}
-    const LoginSymbol = status === 200 ? true : false
-    console.log(LoginSymbol,'LoginSymbol')
-    const onSearch = value => console.log(value);
+    const { nickname } = data || {}
+    console.log(nickname,)
+    const LoginSymbol = localStorage.getItem('userId') === null ? true : false
     const menu = (
       <Menu>
         <Menu.Item onClick={() => {
@@ -34,14 +100,19 @@ class Home extends PureComponent{
             }
           })
         }}>个人主页</Menu.Item>
+        <Menu.Item onClick={() => {
+          localStorage.removeItem('userId')
+          history.push('./login')
+        }}>退出登录</Menu.Item>
+
       </Menu>
     );
     return (
       <Header className="header" style={{backgroundColor:'#ddd'}} >
         <div className={styles.nav} style={{display:'flex',height:'60px',justifyContent:'space-evenly'}}>
          <img style={{width:'50px',height:'50px' ,borderRadius:'50%',marginTop:'7px'}} src={require('../../assets/bjt.jpg')} alt='logo'></img>
-            <Search style={{ width: '50%', marginLeft: '125px', marginTop: '16px' }} placeholder="input search text" onSearch={onSearch} enterButton />
-           {!LoginSymbol?( <div onClick={() => {
+            <Search style={{ width: '50%', marginLeft: '125px', marginTop: '16px' }} placeholder="input search text" onSearch={this.onSearch} enterButton />
+           {LoginSymbol?( <div onClick={() => {
             history.push('./login')
           }}>
             <a>登录</a>
@@ -57,73 +128,88 @@ class Home extends PureComponent{
     </Header>
     )
   }
-  clickPic = (id) => {
-      //通过id查找这个图片的具体信息
-    // 这里需要写一个接口
+  clickPic = (e) => {
+    const detail= {detailId:e}
+    this.props.dispatch({
+      type: 'home/loadDetail',
+      payload: detail,
+    })
   }
   renderContent = () => {
-    const data = [
-      { detailid: 3, width:'100px',  pictrue: 'https://ss0.bdstatic.com/70cFvHSh_Q1YnxGkpoWK1HF6hhy/it/u=3016291998,3594589642&fm=26&gp=0.jpg' },
-      { detailid: 4, pictrue: 'https://ss1.bdstatic.com/70cFuXSh_Q1YnxGkpoWK1HF6hhy/it/u=2267948308,1173577873&fm=26&gp=0.jpg' },
-      { detailid: 5, pictrue: 'https://ss0.bdstatic.com/70cFvHSh_Q1YnxGkpoWK1HF6hhy/it/u=3193558439,3477563873&fm=26&gp=0.jpg' },
-      { detailid: 6, pictrue: 'https://ss0.bdstatic.com/70cFvHSh_Q1YnxGkpoWK1HF6hhy/it/u=1261670732,454648216&fm=26&gp=0.jpg' },
-      { detailid: 7, pictrue: 'https://ss3.bdstatic.com/70cFv8Sh_Q1YnxGkpoWK1HF6hhy/it/u=2555409660,4253693389&fm=26&gp=0.jpg' },
-      { detailid: 8, pictrue: 'https://img1.baidu.com/it/u=2177311505,1938108059&fm=26&fmt=auto&gp=0.jpg' },
-      {detailid:9,pictrue:'https://img2.baidu.com/it/u=1589546105,1236076347&fm=26&fmt=auto&gp=0.jpg'}
-    ,
-      { detailid: 13, width:'100px', pictrue: 'https://ss0.bdstatic.com/70cFvHSh_Q1YnxGkpoWK1HF6hhy/it/u=3016291998,3594589642&fm=26&gp=0.jpg' },
-      { detailid: 14, pictrue: 'https://ss1.bdstatic.com/70cFuXSh_Q1YnxGkpoWK1HF6hhy/it/u=2267948308,1173577873&fm=26&gp=0.jpg' },
-      { detailid: 15, pictrue: 'https://ss0.bdstatic.com/70cFvHSh_Q1YnxGkpoWK1HF6hhy/it/u=3193558439,3477563873&fm=26&gp=0.jpg' },
-      { detailid: 16, pictrue: 'https://ss0.bdstatic.com/70cFvHSh_Q1YnxGkpoWK1HF6hhy/it/u=1261670732,454648216&fm=26&gp=0.jpg' },
-      { detailid: 17, pictrue: 'https://ss3.bdstatic.com/70cFv8Sh_Q1YnxGkpoWK1HF6hhy/it/u=2555409660,4253693389&fm=26&gp=0.jpg' },
-      { detailid: 18, pictrue: 'https://img1.baidu.com/it/u=2177311505,1938108059&fm=26&fmt=auto&gp=0.jpg' },
-      ]
+    const { home } = this.props
+    const { picList } = home||{}
+    const { data } = picList || {}
+    data && data.rows.forEach((it) => {
+      console.log(it)
+      const { p_url,id,p_sid,p_uid } = it
+      imageList.push({ p_url, id,p_sid,p_uid })
+    })
+
+
+    if (data && imageList.length >= data.allNumber) {
+      isEnd = true;
+    }
+    setTimeout(() => {
+      isSend = false;
+    },200)
+   
+
     let lstItem = (item, index) => {
-      let rand = Math.random(1) % 3
+      let rand = Math.random(1) % 2
+      const {id,p_url} = item
       return (
-        <div key={item.detailid}
+        <div key={id}  onClick = {()=>this.clickPic(id)}
           // className="item_left"
         >
           <div className={'item_img ' + (rand === 0 ? 'imgframe' : 'imgframe1')}>
-            <img src={(item.pictrue ? item.pictrue : default_pic_1)}
-              onClick = {this.clickPic()}
-              alt=""/>
+            {/* <img src={(p_url ? p_url+'?imageMogr2/thumbnail/x300' : state.default_pic_1)}   alt=""/> */}
+            <img src={(p_url ? p_url+'?imageMogr2/thumbnail/365x' : state.default_pic_1)}   alt=""/>
+
           </div>
         </div>
       );
     }
     return (
       <Content style={{ padding: '0 50px' }} className={styles.pubuliu}>
-        <Masonry
-         className={'my-gallery-class'} // default ''
-         elementType={'ul'} // default 'div'
-         options={{transitionDuration: 15, transitionProperty: 'width'}} // default {}
-         disableImagesLoaded={false} // default false
-         updateOnEachImageLoad={false} // default false and works only if disableImagesLoaded is false
-        onClick = {()=>{console.log('00')}}
-        >
-         {data.map(lstItem)}
-    </Masonry>
+        <ImageLauout srcArray={imageList.slice()} dispatch={ this.props.dispatch}  onClick={this.clickPic}/>
       </Content>
     )
   }
+
+  scrollHandler = (e) => {
+    const target = e.target;
+    const bottomNum = target.scrollHeight - target.scrollTop - target.offsetHeight;
+    if (bottomNum < 1000) {
+      if (isEnd === false && isSend === false) {
+        isSend = true;
+        this.searchHomePic(++page)
+        console.log("next Page",page);
+      }
+    }
+  }
+
   render(){
     const {form} = this.props
     //  const { getFieldDecorator } = form;\
     console.log('8765432,===', this.props)
-    console.log(cookie.load('userId'))
+    // console.log(cookie.load('userId'))
+
     return(
-    <Layout>
+      <div className={styles["home-wrap"]} onScroll={this.scrollHandler}>
       {this.renderHeader()}
       {this.renderContent()}
-  </Layout>
+  </div>
     )
   }
 }
 function mapStateToProps(state) {
   const { Login } = state.login
+  const home = state.home
+  const picList = state.picList
   return {
-    Login // 在这return,上面才能获取到
+    Login,
+    home,
+    picList
   }
 }
 export default connect(mapStateToProps)(Form.create({ name: 'home' })(Home));

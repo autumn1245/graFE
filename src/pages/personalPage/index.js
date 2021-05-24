@@ -6,6 +6,8 @@ const { Option } = Select;
 const { TextArea } = Input;
 import styles from './index.less'
 import classify from './../../utils/classify'
+import  ImageLauout  from "../components/imageLayout"
+
 // const mapStateToProps = (state,personalPage)=>{
 //   return { 
 //     todos: state.todos ,
@@ -25,21 +27,31 @@ class PersonalPage extends PureComponent{
       previewImage: '',
       previewTitle: '',
       fileList: [],
+      starOrNot:true//判断显示的是自己上传的还是收藏的
     }
   }
 
 
   componentDidMount() {
-    const { dispatch } = this.props
-    const resNickname = this.props.location.params.nickname
-    console.log('u------nickname',resNickname)
+    const { dispatch,personalPage } = this.props
+    const resNickname = (this.props.location.params||{}).nickname
     const value = { nickname: resNickname }
+    const { Login } = personalPage||{}
+    const { id } = Login || {}
+    const tempId = localStorage.getItem('userId')
     dispatch({
       type: 'personalPage/loadPersonal',
       payload: value,
-    }).then(() => {
-      console.log(this.props,'prop')
     })
+    dispatch({
+      type: 'personalPage/searchAllOwnPic',
+      payload: { searchUserId: tempId },
+    })
+    dispatch({
+      type: 'personalPage/searchStarPic',
+      payload: { searchUserId: tempId },
+    })
+
   }
 
   componentDidUpdate() {
@@ -52,19 +64,38 @@ class PersonalPage extends PureComponent{
   }
 
   renderHistory = () => {
+    const urlArray = [
+        {
+            "id": 1,
+            "p_url": "https://image-1257456360.cos.ap-chengdu.myqcloud.com/1620301712421-IMG_9002.JPG"
+        },
+        {
+            "id": 2,
+            "p_url": "https://image-1257456360.cos.ap-chengdu.myqcloud.com/1620301712421-IMG_9002.JPG"
+        },
+        {
+            "id": 3,
+            "p_url": "https://image-1257456360.cos.ap-chengdu.myqcloud.com/1620303103866-IMG_9040.JPG"
+        },
+        {
+            "id": 4,
+            "p_url": "https://image-1257456360.cos.ap-chengdu.myqcloud.com/1620303143062-IMG_9036.JPG"
+        }
+    ]
     return (
       <div className = {styles.leftHistory}  >
       <Card title='优秀作品展示' className={styles.leftCard}  >
-
+          <ImageLauout srcArray={urlArray} size={90}/>
         </Card>
         </div>
     )
   }
   renderMessage = () => {
     const { personalPage } = this.props
-    const { Login={} } = personalPage
-    const { data={} } = Login
-    const { u_area, u_key, u_dis, u_name, u_nickname, u_sex } = data
+    console.log(personalPage,'personalpage====')
+    const { Login } = personalPage||{}
+    const { data } = Login||{}
+    const { u_area, u_key, u_dis, u_name, u_nickname, u_sex } = data ||{}
     
     return (
       <div>
@@ -255,20 +286,20 @@ renderChangeModel = () => {
   }
   
   submitUpload = (e) => {
+
     const { form, dispatch, personalPage } = this.props
     const { fileList } = this.state
     const { Login: { data } } = personalPage
-    const { id } = data
+    const { id } = data||{}
    
     e.preventDefault();
     form.validateFields((err, values) => {
-      console.log(values,'value=======')
       const value = { id, ...values }
-      const {title,classify:cla,des} = value
+      const { title, classify: cla, des } = value
+
       if (!err) {
         fileList.forEach((it, index) => {
           const { response, name } = it
-          
           if (response !== undefined) {
             const { sizeFinal, url ,status} = response
             const val = {
@@ -278,17 +309,19 @@ renderChangeModel = () => {
               uid: id,
               title,
               des,
-              style:this.dealClassify(cla)
+              // style: this.dealClassify(cla)
+              style:cla
             }
-            if (status === 'error') {
+            if (status === '404') {
               message.error('上传服务器失败！')
             } else {
-              dispatch({
-                type: 'personalPage/uploadPic',
-                payload: val,
-            })
+              // if (status !== 404) {
+                dispatch({
+                  type: 'personalPage/uploadPic',
+                  payload: val,
+              })
+              // }
             }
-         
           }
           else {
             message.info('图片上传云服务中请稍等')
@@ -361,7 +394,7 @@ renderChangeModel = () => {
                 rules: [
                   { required: true, message: 'Please check your classify!' },
                 ],
-                initialValue: '人文',
+                initialValue: 4,
               })(
                 <Select style={{ width: 190 }} onChange={handleChangeSelect}>
                   {(catery || []).map((item, index) => {
@@ -416,6 +449,17 @@ renderChangeModel = () => {
     )
 }
 
+  renderPicArray = () => {
+    
+    
+    return (
+      <div>
+
+        {/* <ImageLauout src ></ImageLauout> */}
+
+    </div>
+  )
+}
   render(){
     const { form } = this.props
     const{modify} = this.state
@@ -427,10 +471,18 @@ renderChangeModel = () => {
           {modify ? this.renderChangeModel() : null}
           {this.renderUpload()}
         </div>
-        <div>1234</div>
+        {/* <div>1234</div> */}
+        {this.renderPicArray()}
       </div>
     )
   }
 }
-export default connect(({ personalPage }) => ({ personalPage }))(Form.create({ name: 'personalPage' })(PersonalPage));
+function mapStateToProps(state) {
+  const personalPage  = state.personalPage
+  // const home = state.home
+  return {
+    personalPage
+  }
+}
+export default connect(mapStateToProps)(Form.create({ name: 'personalPage' })(PersonalPage));
 // export default connect(mapStateToProps)(Form.create({ name: 'personalPage' })(PersonalPage));

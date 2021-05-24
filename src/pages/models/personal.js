@@ -2,7 +2,7 @@ import { message } from 'antd';
 import { history } from 'umi';
 import Service from '../constant/service'
 
-const {loadPersonal,modifyMessage ,uploadPic} = Service;
+const {loadPersonal,modifyMessage ,uploadPic,searchStarPic,searchAllOwnPic} = Service;
 
 export default {
   namespace:'personalPage',
@@ -40,7 +40,30 @@ export default {
           Upload:data||{}
         }
       })
-  },
+      if (data.status === 200) {
+        message.success('上传成功！')
+      }
+    },
+    // 搜索自己收藏的图片
+    *searchStarPic({ payload }, { call, put }) {
+      const data = yield call(searchStarPic, { ...payload })
+      yield put({
+        type: 'updateState',
+        payload: {
+          starArray:data||{}
+        }
+      })
+    },
+    // 搜索自己发表的图片
+    *searchAllOwnPic({ payload }, { call, put }) {
+      const data = yield call(searchAllOwnPic, { ...payload })
+      yield put({
+        type: 'updateState',
+        payload: {
+          ownPicArray:data||{}
+        }
+      })
+    },
   },
   reducers: {
     // updateState(state, { payload }) {

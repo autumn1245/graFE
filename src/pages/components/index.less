@@ -1,0 +1,52 @@
+.flex {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.flex-item {
+    overflow: hidden;
+    position: relative;
+    flex-grow: 1;
+    margin: 5px;
+   
+}
+.flex-item  img {
+    position: absolute;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.last {
+    flex-grow: 99999999999;
+}
+
+
+.flex-item:hover .mark{
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.mark{
+    position: absolute;
+    bottom: 0px;
+    height: 42px;
+    width: 100%;
+    color: #fff;
+    z-index: 2;
+    background-image: linear-gradient(180deg, transparent 0, rgba(0, 0, 0, 0.6));
+    display: flex;
+    justify-content: space-between;
+    padding: 11px 36px;
+    
+    opacity: 0;
+    transform: translateY(20px);
+    transition: all 0.3s;
+}
+
+.mark__message{
+    overflow: hidden;
+    text-overflow:ellipsis;
+    white-space: nowrap;
+}

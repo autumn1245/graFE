@@ -32,11 +32,31 @@ const Service = {
     },
     //加载图片详情
     loadDetail(params) {
-        return postJson(``, params)
+        return post(`${localUrl}/pic/find`, params)
+    },
+    //获取图片列表
+    loadPicList(params) {
+        return post(`${localUrl}/pic/loadlist`,params)
+    },
+    //收藏图片
+    toStarPic(params ) {
+        return post(`${localUrl}/collect`,params)
     },
     //下载图片
     downLoadPic(params) {
         return postJson(``, params)
+    },
+    //搜素某个类别的图片
+    searchPic(params) {
+        return  post(`${localUrl}/pic/search`,params)
+    },
+    // 查询个人发表的所有图片
+    searchAllOwnPic(params) {
+        return post(`${localUrl}/pic/findHistory`,params)
+    },
+    // 查询个人收藏的所有图片
+    searchStarPic(params) {
+        return  post(`${localUrl}/collect/findStar`,params)
     }
 }
 
