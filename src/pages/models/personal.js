@@ -24,6 +24,10 @@ export default {
       const { status } = data
       if (status === 200) {
         message.success('修改成功！')
+        // this.props.dispatch({
+        //   type: 'personalPage/loadPersonal',
+        //   payload: {nickname:nickName},
+        // })
       }
       yield put({
         type: 'updateState',
@@ -42,6 +46,7 @@ export default {
       })
       if (data.status === 200) {
         message.success('上传成功！')
+        
       }
     },
     // 搜索自己收藏的图片

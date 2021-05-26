@@ -73,11 +73,7 @@ class Home extends PureComponent {
     this.props.dispatch({
       type: 'home/searchPic',
       payload:{searchId:temp}
-    }).then(() => {
-      console.log(data,'data===')
     })
-
-    
   }
 
   lazyLoad(num = 0, nodes, urls = []) {
@@ -87,7 +83,7 @@ class Home extends PureComponent {
     const { Login } = this.props
     const { status, data } = Login || {}
     const { nickname } = data || {}
-    console.log(nickname,)
+    const nickName = localStorage.getItem('userName')
     const LoginSymbol = localStorage.getItem('userId') === null ? true : false
     const menu = (
       <Menu>
@@ -96,7 +92,7 @@ class Home extends PureComponent {
           history.push({
             pathname:"/personalPage",
             params:{
-                nickname
+                nickname:nickName
             }
           })
         }}>个人主页</Menu.Item>
@@ -119,7 +115,7 @@ class Home extends PureComponent {
           </div>) : (
         <Dropdown overlay={menu}>
           <a className="ant-dropdown-link" onClick={e => e.preventDefault()}>
-          {nickname}
+          {nickName}
           <DownOutlined />
           </a>
         </Dropdown>
@@ -139,13 +135,16 @@ class Home extends PureComponent {
     const { home } = this.props
     const { picList } = home||{}
     const { data } = picList || {}
+    console.log(data, "data======");
+    // 通过isSend来判断是懒加载还是搜索结果
+    if (isSend === false) {
+      imageList = []
+    }
     data && data.rows.forEach((it) => {
-      console.log(it)
       const { p_url,id,p_sid,p_uid } = it
       imageList.push({ p_url, id,p_sid,p_uid })
     })
-
-
+    console.log(imageList,'imageList====')
     if (data && imageList.length >= data.allNumber) {
       isEnd = true;
     }
@@ -183,7 +182,6 @@ class Home extends PureComponent {
       if (isEnd === false && isSend === false) {
         isSend = true;
         this.searchHomePic(++page)
-        console.log("next Page",page);
       }
     }
   }
@@ -191,9 +189,7 @@ class Home extends PureComponent {
   render(){
     const {form} = this.props
     //  const { getFieldDecorator } = form;\
-    console.log('8765432,===', this.props)
     // console.log(cookie.load('userId'))
-
     return(
       <div className={styles["home-wrap"]} onScroll={this.scrollHandler}>
       {this.renderHeader()}

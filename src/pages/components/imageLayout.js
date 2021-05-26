@@ -2,13 +2,11 @@ import React, { ReactElement, FC, useEffect, useState } from "react";
 import { Tooltip } from "antd";
 import { StarOutlined } from '@ant-design/icons';
 import style from "./index.less";
-
 import catery from "../../utils/classify";
 const { catery: cateryList } = catery
 
 const ImageLayout = ({srcArray,onClick,size=300,dispatch})  => {
     const [imageList, setImageList] = useState([]);
-
     const getPicInfoFromCoOS = async (src) => {
         return new Promise((resolve) => {
             const xhr = new XMLHttpRequest();
@@ -68,17 +66,14 @@ const ImageLayout = ({srcArray,onClick,size=300,dispatch})  => {
 
     const getImage = async () => {
         const linkMessageList = await getImageMessage(srcArray);
-
-        console.log(linkMessageList);
         setImageList(linkMessageList);
     };
-
+    console.log(imageList,'imageList====')
     useEffect(() => {
         getImage();
     }, [srcArray]);
-
     return (
-        <div className={style.flex}>
+        <div className={`${style.flex} self`}>
             {imageList.map((item) => {
                 return (
                     <div
@@ -98,8 +93,7 @@ const ImageLayout = ({srcArray,onClick,size=300,dispatch})  => {
                                 }/>
                             </div>
                             <div className={style["mark__message"]}>
-                                    <span>{cateryList.find(each => {
-                                        console.log(each.id , item.sid)
+                                    <span>{cateryList&&cateryList.find(each => {
                                         return each.id === item.sid
                                     }).name || ""}</span>          
                         </div>

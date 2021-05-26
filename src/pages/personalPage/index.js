@@ -51,7 +51,6 @@ class PersonalPage extends PureComponent{
       type: 'personalPage/searchStarPic',
       payload: { searchUserId: tempId },
     })
-
   }
 
   componentDidUpdate() {
@@ -64,6 +63,15 @@ class PersonalPage extends PureComponent{
   }
 
   renderHistory = () => {
+    console.log(this.props, 'props======')
+    const imageList = []
+    const { personalPage } = this.props ||{}
+    const { ownPicArray } = personalPage || {}
+    const { data } = ownPicArray || {}
+    data && data.forEach((it) => {
+      const { p_url,id,p_sid,p_uid } = it
+      imageList.push({ p_url, id,p_sid,p_uid })
+    })
     const urlArray = [
         {
             "id": 1,
@@ -85,14 +93,17 @@ class PersonalPage extends PureComponent{
     return (
       <div className = {styles.leftHistory}  >
       <Card title='优秀作品展示' className={styles.leftCard}  >
-          <ImageLauout srcArray={urlArray} size={90}/>
+          <div className={styles.leftCon}>
+            
+            <ImageLauout srcArray={imageList} size={90} />
+         </div>
         </Card>
         </div>
     )
   }
   renderMessage = () => {
     const { personalPage } = this.props
-    console.log(personalPage,'personalpage====')
+    // console.log(personalPage,'personalpage====')
     const { Login } = personalPage||{}
     const { data } = Login||{}
     const { u_area, u_key, u_dis, u_name, u_nickname, u_sex } = data ||{}
@@ -130,6 +141,7 @@ class PersonalPage extends PureComponent{
   // };
 
   handleOk = (e) => {
+    const nickName = localStorage.getItem('userName')
     const { form, dispatch, personalPage } = this.props
     const { Login: { data } } = personalPage
     const {id} = data
@@ -141,6 +153,12 @@ class PersonalPage extends PureComponent{
           type: 'personalPage/modifyMessage',
           payload: value,
         })
+        setTimeout(() => {
+          dispatch({
+            type: 'personalPage/loadPersonal',
+            payload: {nickname:nickName},
+          })
+        },1500)
     } else {
       return null;
     }
@@ -319,8 +337,14 @@ renderChangeModel = () => {
                 dispatch({
                   type: 'personalPage/uploadPic',
                   payload: val,
+                })
+              form.setFieldsValue({
+                'title': '',
+                'classify': 4,
+                'des': '',
               })
               // }
+              // handleCancel()
             }
           }
           else {
