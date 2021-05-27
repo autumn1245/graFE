@@ -135,7 +135,6 @@ class Home extends PureComponent {
     const { home } = this.props
     const { picList } = home||{}
     const { data } = picList || {}
-    console.log(data, "data======");
     // 通过isSend来判断是懒加载还是搜索结果
     if (isSend === false) {
       imageList = []
@@ -144,7 +143,6 @@ class Home extends PureComponent {
       const { p_url,id,p_sid,p_uid } = it
       imageList.push({ p_url, id,p_sid,p_uid })
     })
-    console.log(imageList,'imageList====')
     if (data && imageList.length >= data.allNumber) {
       isEnd = true;
     }

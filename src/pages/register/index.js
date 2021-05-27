@@ -148,13 +148,13 @@ class Register extends PureComponent {
                 valuePropName: 'checked',
                 initialValue: true,
               })(<Checkbox>Remember me</Checkbox>)} */}
-              <a
+              {/* <a
                 className="login-form-forgot"
                 href=""
                 style={{ float: 'right' }}
               >
                 Forgot password
-              </a>
+              </a> */}
               <Button
                 type="primary"
                 htmlType="submit"

@@ -14,7 +14,7 @@ export default {
     *login({payload},{call,put}){
       const data = yield call(checkLogin, { ...payload })
       const { data: datTemp } = data || {}
-      const {userId,nickname} = datTemp
+      const {userId,nickname} = datTemp||{}
         yield put({
           type:'updateState',
           payload:{
@@ -35,6 +35,9 @@ export default {
         //   httpOnly: true
         // })
        
+      }
+      else {
+        message.error('登录失败，请检查用户名密码重新登陆！')
       }
     }
 

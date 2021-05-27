@@ -5,7 +5,7 @@ import style from "./index.less";
 import catery from "../../utils/classify";
 const { catery: cateryList } = catery
 
-const ImageLayout = ({srcArray,onClick,size=300,dispatch})  => {
+const ImageLayout = ({srcArray,onClick,size=300,dispatch,ownStarOrNot})  => {
     const [imageList, setImageList] = useState([]);
     const getPicInfoFromCoOS = async (src) => {
         return new Promise((resolve) => {
@@ -68,12 +68,12 @@ const ImageLayout = ({srcArray,onClick,size=300,dispatch})  => {
         const linkMessageList = await getImageMessage(srcArray);
         setImageList(linkMessageList);
     };
-    console.log(imageList,'imageList====')
     useEffect(() => {
         getImage();
     }, [srcArray]);
     return (
-        <div className={`${style.flex} self`}>
+            (imageList||[]).length !== 0 ? (
+                <div className={`${style.flex} self`}>
             {imageList.map((item) => {
                 return (
                     <div
@@ -86,11 +86,11 @@ const ImageLayout = ({srcArray,onClick,size=300,dispatch})  => {
                         <img src={item.src + "?imageMogr2/thumbnail/400x"} alt="" />
                         <div className={style["mark"]}>
                         <div className={style["mark__collection"]}>
-                                <StarOutlined style={{ fontSize: 22 }} onClick={(e) => {
+                         { ownStarOrNot?     <StarOutlined style={{ fontSize: 22 }} onClick={(e) => {
                                     e.stopPropagation();
                                     collectionHandler(item.id)
                                 }
-                                }/>
+                                }/>:null}
                             </div>
                             <div className={style["mark__message"]}>
                                     <span>{cateryList&&cateryList.find(each => {
@@ -103,6 +103,9 @@ const ImageLayout = ({srcArray,onClick,size=300,dispatch})  => {
             })}
             <i className={style["last"]}></i>
         </div>
+            
+        ):(<div style={{margin:'0 auto',fontSize:'16px',width:'50%',paddingTop:'40px'}}>暂无数据</div>)
+        
     );
 };
 export default ImageLayout;

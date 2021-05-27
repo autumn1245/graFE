@@ -1,5 +1,5 @@
 import React, { PureComponent } from 'react'
-import { Form, Icon, Input,Upload, Button, Card ,Modal,Select, message } from 'antd';
+import { Form, Icon, Input,Upload, Button, Card ,Modal,Select, message,Switch  } from 'antd';
 import { connect } from 'dva';
 import { PlusOutlined } from '@ant-design/icons';
 const { Option } = Select;
@@ -63,8 +63,7 @@ class PersonalPage extends PureComponent{
   }
 
   renderHistory = () => {
-    console.log(this.props, 'props======')
-    const imageList = []
+    let imageList = []
     const { personalPage } = this.props ||{}
     const { ownPicArray } = personalPage || {}
     const { data } = ownPicArray || {}
@@ -72,38 +71,21 @@ class PersonalPage extends PureComponent{
       const { p_url,id,p_sid,p_uid } = it
       imageList.push({ p_url, id,p_sid,p_uid })
     })
-    const urlArray = [
-        {
-            "id": 1,
-            "p_url": "https://image-1257456360.cos.ap-chengdu.myqcloud.com/1620301712421-IMG_9002.JPG"
-        },
-        {
-            "id": 2,
-            "p_url": "https://image-1257456360.cos.ap-chengdu.myqcloud.com/1620301712421-IMG_9002.JPG"
-        },
-        {
-            "id": 3,
-            "p_url": "https://image-1257456360.cos.ap-chengdu.myqcloud.com/1620303103866-IMG_9040.JPG"
-        },
-        {
-            "id": 4,
-            "p_url": "https://image-1257456360.cos.ap-chengdu.myqcloud.com/1620303143062-IMG_9036.JPG"
-        }
-    ]
     return (
       <div className = {styles.leftHistory}  >
-      <Card title='优秀作品展示' className={styles.leftCard}  >
-          <div className={styles.leftCon}>
-            
-            <ImageLauout srcArray={imageList} size={90} />
-         </div>
+        <Card title='优秀作品展示' className={styles.leftCard}  >
+          {(imageList||[]).length!==0 ? (
+           <div className={styles.leftCon}>
+           <ImageLauout srcArray={imageList} size={90} />
+        </div>
+        ):(<div style={{width:'90%',margin:'0 auto'}}>请先上传图片</div>)}
+         
         </Card>
         </div>
     )
   }
   renderMessage = () => {
     const { personalPage } = this.props
-    // console.log(personalPage,'personalpage====')
     const { Login } = personalPage||{}
     const { data } = Login||{}
     const { u_area, u_key, u_dis, u_name, u_nickname, u_sex } = data ||{}
@@ -474,13 +456,32 @@ renderChangeModel = () => {
 }
 
   renderPicArray = () => {
-    
-    
+    const {starOrNot } = this.state
+    let imageList = []
+    const starList = []
+    const { personalPage } = this.props ||{}
+    const { ownPicArray,starArray } = personalPage || {}
+    const { data } = ownPicArray || {}
+    const {data:starData} = starArray||{}
+    data && data.forEach((it) => {
+      const { p_url,id,p_sid,p_uid } = it
+      imageList.push({ p_url, id,p_sid,p_uid })
+    })
+    let tempRes = (starData||[]).flat(Infinity)
+    tempRes && tempRes.forEach((it) => {
+      const { p_url,id,p_sid,p_uid } = it
+      starList.push({ p_url, id,p_sid,p_uid })
+    })
     return (
-      <div>
-
-        {/* <ImageLauout src ></ImageLauout> */}
-
+      <div className= {styles.showPart}>
+        <div className = {styles.buttonStyle}>
+            <Button size='large' style={{marginRight:'25px'}}  type= {starOrNot===true?'primary':'default'} onClick={()=>{this.setState({starOrNot:true})}}>历史作品展示</Button>
+            <Button  size='large' type= {starOrNot===false?'primary':'default'} onClick={()=>{this.setState({starOrNot:false})}}>我的收藏</Button>
+        </div>
+        <div className={styles.show}>
+          
+          <ImageLauout srcArray={starOrNot===true?imageList:starList}  ownStarOrNot={false} size={190} />
+        </div>
     </div>
   )
 }
