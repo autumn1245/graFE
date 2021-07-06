@@ -168,7 +168,7 @@ class Home extends PureComponent {
     }
     return (
       <Content style={{ padding: '0 50px' }} className={styles.pubuliu}>
-        <ImageLauout srcArray={imageList.slice()} dispatch={ this.props.dispatch}  onClick={this.clickPic}/>
+        <ImageLauout srcArray={imageList.slice()} dispatch={ this.props.dispatch}  ownStarOrNot={true} onClick={this.clickPic}/>
       </Content>
     )
   }

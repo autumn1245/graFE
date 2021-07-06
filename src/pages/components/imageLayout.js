@@ -86,7 +86,8 @@ const ImageLayout = ({srcArray,onClick,size=300,dispatch,ownStarOrNot})  => {
                         <img src={item.src + "?imageMogr2/thumbnail/400x"} alt="" />
                         <div className={style["mark"]}>
                         <div className={style["mark__collection"]}>
-                         { ownStarOrNot?     <StarOutlined style={{ fontSize: 22 }} onClick={(e) => {
+                                {ownStarOrNot ?
+                                    <StarOutlined style={{ fontSize: 22 }} onClick={(e) => {
                                     e.stopPropagation();
                                     collectionHandler(item.id)
                                 }
